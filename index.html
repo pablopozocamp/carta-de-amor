@@ -310,6 +310,43 @@
     line-height:1.3;
   }
 
+  /* ---- apology section ---- */
+  .apology{
+    background:var(--cream-2);
+    padding:100px 24px;
+    text-align:center;
+    position:relative;
+  }
+  .apology-mark{
+    font-family:'Petit Formal Script', cursive;
+    color:var(--rose-gold);
+    font-size:24px;
+    margin-bottom:22px;
+  }
+  .apology-box{
+    max-width:600px;
+    margin:0 auto;
+  }
+  .apology-box p{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(19px,2.4vw,23px);
+    line-height:1.85;
+    color:var(--ink);
+    margin-bottom:24px;
+  }
+  .apology-box p .accent{
+    font-style:italic;
+    color:var(--choco-mid);
+    font-weight:500;
+  }
+  .apology-signoff{
+    margin-top:36px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:20px;
+    color:#6b4a34;
+  }
+
   /* ---- promise section ---- */
   .promise{
     background:var(--choco-dark);
@@ -401,6 +438,34 @@
     box-shadow:0 6px 16px rgba(0,0,0,.25);
   }
 
+  /* ---- final manuscript signature ---- */
+  .final-signature{
+    padding:70px 24px 130px;
+    text-align:center;
+    background:var(--cream);
+  }
+  .manuscript-signature{
+    position:relative;
+    display:inline-block;
+    font-family:'Petit Formal Script', cursive;
+    font-size:clamp(26px,5.5vw,46px);
+    color:var(--rose-gold);
+    line-height:1.3;
+    padding:6px 4px;
+  }
+  .manuscript-signature::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:var(--cream);
+    transform:scaleX(1);
+    transform-origin:left;
+    transition:transform 2.3s cubic-bezier(.65,.02,.3,1) .35s;
+  }
+  .manuscript-signature.write::after{
+    transform:scaleX(0);
+  }
+
   footer{
     text-align:center;
     padding:30px;
@@ -447,11 +512,11 @@
 
     <section class="letter reveal">
       <p>Mi vida,</p>
-      <p>No sé ni por dónde empezar, la verdad. Llevo días queriendo decirte esto y nunca me sale como quiero, así que hoy te lo escribo con calma, para que no se me pierda ninguna palabra: <span class="accent">te amo</span>. Y no es una frase que suelto porque toca, se me nota en todo lo que hago: en cómo te busco, en que siempre elijo quedarme.</p>
+      <p>No sé ni por dónde empezar, la verdad. Llevo días queriendo decirte esto y nunca me sale como quiero, así que hoy te lo escribo con calma, para que no se me pierda ninguna palabra, <span class="accent">te amo</span>. Y no es una frase que suelto porque toca, se me nota en todo lo que hago: en cómo te busco, en que siempre elijo quedarme.</p>
       <div class="divider"><span class="line"></span><span class="mark">♥</span><span class="line"></span></div>
-      <p>Me haces falta de verdad, mi amor, y no hablo solo de los días bonitos. Hablo del día a día normal: de contarte las tonterías que me pasan, de que se me ocurre algo y lo primero que pienso es "esto tengo que decírselo a Ana". Sin ti al lado todo se siente más soso.</p>
+      <p>Me haces falta de verdad, mi amor, y no hablo solo de los días bonitos. Hablo del día a día normal, de contarte las tonterías que me pasan, de que se me ocurre algo y lo primero que pienso es "esto tengo que decírselo a Ana". Sin ti al lado todo se siente más soso.</p>
       <div class="divider"><span class="line"></span><span class="mark">♥</span><span class="line"></span></div>
-      <p>Y esto te lo digo en serio, bombón: pase lo que pase, <span class="accent">ahí voy a estar</span>. En los días fáciles y en los que no tanto. No te lo digo para que quede bonito en una carta, te lo digo porque es justo lo que quiero para nosotros.</p>
+      <p>Y esto te lo digo en serio, bombón, pase lo que pase, <span class="accent">ahí voy a estar</span>. En los días fáciles y en los que no tanto. No te lo digo para que quede bonito en una carta, te lo digo porque es justo lo que quiero para nosotros.</p>
     </section>
 
     <section class="gallery-section">
@@ -476,6 +541,15 @@
       </div>
     </section>
 
+    <section class="apology reveal">
+      <div class="apology-mark">una pausa, algo que también quiero decirte</div>
+      <div class="apology-box">
+        <p>También quiero aprovechar esta carta para pedirte perdón, mi amor. Por los momentos en los que la he cagado, en los que dije algo mal o no estuve como debía. <span class="accent">Nunca, jamás</span>, ha sido con intención de hacerte daño.</p>
+        <p>A veces uno se equivoca sin querer, y sé que eso no borra lo que pudiste haber sentido en esos momentos. Por eso te lo digo de corazón: lo siento. Y voy a seguir esforzándome cada día por ser mejor para ti, porque te lo mereces todo.</p>
+      </div>
+      <div class="apology-signoff">perdóname, bombón</div>
+    </section>
+
     <section class="promise">
       <div class="petals" id="petals"></div>
       <div class="promise-mark reveal">mi promesa</div>
@@ -487,6 +561,10 @@
       <p class="reveal">Te quiero, mi vida. Como no te imaginas.</p>
       <div class="signature reveal">tuyo, siempre</div>
       <div class="seal-final reveal">A</div>
+    </section>
+
+    <section class="final-signature">
+      <span class="manuscript-signature" id="manuscript-sig">Con cariño, tu Gachón de confianza.</span>
     </section>
 
     <footer>hecho con amor, para ti</footer>
@@ -566,6 +644,21 @@
       });
     }, {threshold:.15});
     els.forEach(el=>obs.observe(el));
+    setupSignatureAnim();
+  }
+
+  function setupSignatureAnim(){
+    const sig = document.getElementById('manuscript-sig');
+    if(!sig) return;
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          sig.classList.add('write');
+          obs.unobserve(e.target);
+        }
+      });
+    }, {threshold:.4});
+    obs.observe(sig);
   }
 </script>
 
