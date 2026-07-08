@@ -489,6 +489,56 @@
     font-size:1.15em;
   }
 
+  /* ---- surprise button + hearts burst ---- */
+  .surprise-section{
+    text-align:center;
+    padding:70px 24px 90px;
+  }
+  .surprise-btn{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:19px;
+    padding:15px 36px;
+    border-radius:40px;
+    border:1px solid var(--rose-gold);
+    background:transparent;
+    color:var(--choco-mid);
+    cursor:pointer;
+    transition:background .35s ease, color .35s ease, transform .3s ease;
+  }
+  .surprise-btn:hover{
+    background:var(--rose-gold-light);
+    color:var(--choco-dark);
+    transform:scale(1.04);
+  }
+  .surprise-message{
+    margin-top:26px;
+    font-family:'Petit Formal Script', cursive;
+    font-size:25px;
+    color:var(--rose-gold);
+    max-width:460px;
+    margin-left:auto; margin-right:auto;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .surprise-message.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .confetti-heart{
+    position:fixed;
+    left:0; top:0;
+    pointer-events:none;
+    z-index:200;
+    will-change:transform, opacity;
+    animation:heart-burst 1.7s ease-out forwards;
+  }
+  @keyframes heart-burst{
+    0%{ transform:translate(-50%,-50%) translate(0,0) scale(.4) rotate(0deg); opacity:1; }
+    100%{ transform:translate(-50%,-50%) translate(var(--dx), var(--dy)) scale(1.15) rotate(var(--rot)); opacity:0; }
+  }
+
   /* ---- closing / signature ---- */
   .closing{
     padding:110px 24px 140px;
@@ -596,11 +646,11 @@
 
     <section class="letter reveal">
       <p>Mi vida,</p>
-      <p>No sé ni por dónde empezar, la verdad. Llevo días queriendo decirte esto y nunca me sale como quiero, así que hoy te lo escribo con calma, para que no se me pierda ninguna palabra: <span class="accent">te amo</span>. Y no es una frase que suelto porque toca, se me nota en todo lo que hago: en cómo te busco, en que siempre elijo quedarme.</p>
+      <p>No sé ni por dónde empezar, la verdad. Llevo días queriendo decirte esto y nunca me sale como quiero, así que hoy te lo escribo con calma, para que no se me pierda ninguna palabra, <span class="accent">te amo</span>. Y no es una frase que suelto porque toca, se me nota en todo lo que hago: en cómo te busco, en que siempre elijo quedarme.</p>
       <div class="divider"><span class="line"></span><span class="mark">♥</span><span class="line"></span></div>
-      <p>Me haces falta de verdad, mi amor, y no hablo solo de los días bonitos. Hablo del día a día normal: de contarte las tonterías que me pasan, de que se me ocurre algo y lo primero que pienso es "esto tengo que decírselo a Ana". Sin ti al lado todo se siente más soso.</p>
+      <p>Me haces falta de verdad, mi amor, y no hablo solo de los días bonitos. Hablo del día a día normal, de contarte las tonterías que me pasan, de que se me ocurre algo y lo primero que pienso es "esto tengo que decírselo a Ana". Sin ti al lado todo se siente más soso.</p>
       <div class="divider"><span class="line"></span><span class="mark">♥</span><span class="line"></span></div>
-      <p>Y esto te lo digo en serio, bombón: pase lo que pase, <span class="accent">ahí voy a estar</span>. En los días fáciles y en los que no tanto. No te lo digo para que quede bonito en una carta, te lo digo porque es justo lo que quiero para nosotros.</p>
+      <p>Y esto te lo digo en serio, pase lo que pase, <span class="accent">ahí voy a estar</span>. En los días fáciles y en los que no tanto. No te lo digo para que quede bonito en una carta, te lo digo porque es justo lo que quiero para nosotros.</p>
     </section>
 
     <section class="gallery-section">
@@ -701,6 +751,11 @@
       <div class="promise-title reveal">Voy a estar para ti <span class="hi">siempre</span>, mi amor. Hoy, mañana y todos los días que vengan después.</div>
     </section>
 
+    <section class="surprise-section reveal">
+      <button class="surprise-btn" onclick="launchSurprise(event)">✨ toca aquí para una sorpresita ✨</button>
+      <div class="surprise-message" id="surprise-message">Solo quería recordarte, una vez más, lo mucho que te amo. 💕</div>
+    </section>
+
     <section class="closing">
       <p class="reveal">Gracias por ser mi persona, de verdad. Por hacerme la vida mucho más fácil solo con estar en ella.</p>
       <p class="reveal">Te quiero, mi vida. Como no te imaginas.</p>
@@ -776,6 +831,33 @@
     const btn = document.getElementById('mute-btn');
     song.muted = !song.muted;
     btn.textContent = song.muted ? '🔇' : '🔊';
+  }
+
+  function launchSurprise(e){
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const originX = rect.left + rect.width/2;
+    const originY = rect.top + rect.height/2;
+    const hearts = ['💕','💖','❤️','💗','💓','✨'];
+    const total = 28;
+    for(let i=0;i<total;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti-heart';
+      el.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+      el.style.left = originX + 'px';
+      el.style.top = originY + 'px';
+      const angle = Math.random()*Math.PI*2;
+      const dist = 110 + Math.random()*190;
+      el.style.setProperty('--dx', (Math.cos(angle)*dist) + 'px');
+      el.style.setProperty('--dy', (Math.sin(angle)*dist - 40) + 'px');
+      el.style.setProperty('--rot', (Math.random()*360-180) + 'deg');
+      el.style.fontSize = (16 + Math.random()*16) + 'px';
+      el.style.animationDelay = (Math.random()*.15) + 's';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 2100);
+    }
+    const msg = document.getElementById('surprise-message');
+    if(msg) msg.classList.add('show');
   }
 
   function initReveal(){
