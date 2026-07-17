@@ -662,6 +662,66 @@
   .closing .sign-wrap.in-view .sign-stroke path{stroke-dashoffset:0;
   }
 
+  /* ---------- NOW PLAYING POPUP ---------- */
+  .now-playing{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    max-width:280px;
+    padding:10px;
+    border-radius:16px;
+    background:rgba(10,15,61,0.78);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(14px);
+    box-shadow:0 12px 34px rgba(0,0,0,0.45);
+    opacity:0;
+    transform:translateY(-14px);
+    pointer-events:none;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .now-playing.show{opacity:1;transform:translateY(0);}
+  .now-playing .np-cover{
+    width:46px;height:46px;
+    border-radius:10px;
+    object-fit:cover;
+    flex-shrink:0;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+  }
+  .now-playing .np-info{
+    display:flex;flex-direction:column;
+    line-height:1.25;
+    min-width:0;
+  }
+  .now-playing .np-eyebrow{
+    font-size:9.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--heart);
+    font-weight:700;
+  }
+  .now-playing .np-title{
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .now-playing .np-artist{
+    font-size:11px;
+    color:var(--text-muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  @media(max-width:760px){
+    .now-playing{left:14px;right:14px;top:14px;max-width:none;}
+  }
+
   /* ---------- PLAYER ---------- */
   .player{
     position:fixed;
@@ -1092,6 +1152,15 @@
 
 <audio id="audio" loop></audio>
 
+<div class="now-playing" id="nowPlaying">
+  <img id="npCover" class="np-cover" alt="carátula">
+  <div class="np-info">
+    <div class="np-eyebrow">sonando ahora</div>
+    <div class="np-title" id="npTitle"></div>
+    <div class="np-artist" id="npArtist"></div>
+  </div>
+</div>
+
 <script>
 // ---- countdown ----
 const start = new Date(2026, 4, 16, 0, 0, 0); // 16 mayo 2026, mes 4 = mayo (0-indexed)
@@ -1113,12 +1182,26 @@ setInterval(tick, 1000);
 // ---- background music (random track, autoplay, no UI) ----
 const audio = document.getElementById('audio');
 const playlist = [
-  'music/tuyo-mora.mp3',
-  'music/mil-vidas-mora.mp3',
-  'music/koko-omar-courtz.mp3',
-  'music/what-u-need-omar-courtz.mp3'
+  { src:'music/tuyo-mora.mp3', title:'Tuyo', artist:'Mora', cover:'music/covers/tuyo-mora.jpg' },
+  { src:'music/mil-vidas-mora.mp3', title:'MIL VIDAS', artist:'Mora, Ryan Castro', cover:'music/covers/mil-vidas-mora.jpg' },
+  { src:'music/koko-omar-courtz.mp3', title:'KOKO', artist:'Omar Courtz', cover:'music/covers/koko-omar-courtz.jpg' },
+  { src:'music/what-u-need-omar-courtz.mp3', title:'WHAT U NEED?', artist:'Omar Courtz, Myke Towers', cover:'music/covers/what-u-need-omar-courtz.jpg' }
 ];
-audio.src = playlist[Math.floor(Math.random() * playlist.length)];
+const track = playlist[Math.floor(Math.random() * playlist.length)];
+audio.src = track.src;
+
+const npPopup = document.getElementById('nowPlaying');
+const npCover = document.getElementById('npCover');
+const npTitle = document.getElementById('npTitle');
+const npArtist = document.getElementById('npArtist');
+if(npPopup && npCover && npTitle && npArtist){
+  npCover.src = track.cover;
+  npTitle.textContent = track.title;
+  npArtist.textContent = track.artist;
+  setTimeout(() => npPopup.classList.add('show'), 600);
+  setTimeout(() => npPopup.classList.remove('show'), 7000);
+}
+
 function tryAutoplay(){
   const p = audio.play();
   if(p !== undefined){
